@@ -12,10 +12,6 @@ const errorHandler = (err, req, res, next) => {
         customError.statusCode = 400;
     }
     return res.status(customError.statusCode).json({ msg: customError.msg });
-    // const statusCode =
-    //   (err as any)?.statusCode || StatusCodes.INTERNAL_SERVER_ERROR
-    // const msg: string = err.message || "Something went wrong, try again later"
-    // res.status(statusCode).json({ msg })
 };
 exports.default = errorHandler;
 //# sourceMappingURL=errorHandler.js.map

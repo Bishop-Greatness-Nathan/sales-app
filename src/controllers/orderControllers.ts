@@ -14,7 +14,6 @@ import { StatusCodes } from "http-status-codes"
 import dayjs from "dayjs"
 import Cash from "../models/cashModel"
 import Bank from "../models/bankModel"
-import Expenses from "../models/expensesModel"
 import { calculateProfit } from "../utils/methods"
 import { ExpenseType, OrderType } from "../utils/types"
 
@@ -26,6 +25,8 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response) => {
   req.body.enteredAt = dayjs(new Date(Date.now())).format("YYYY-MM-DD")
   const orderItems = items
 
+  let points: number = 0
+
   // add customer debt
   if (balance > 0) {
     const existingCustomer = await Customer.findOne({
@@ -33,6 +34,16 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response) => {
     })
     if (!existingCustomer) throw new NotFoundError("customer not found")
     existingCustomer.debt += Number(balance)
+    await existingCustomer.save()
+  }
+
+  // loyalty points
+  if (balance === 0 && customer.phoneNumber !== "") {
+    const existingCustomer = await Customer.findOne({ _id: customer._id })
+    if (!existingCustomer) throw new NotFoundError("customer not found")
+    points = total * 0.005
+    existingCustomer.points = Number(existingCustomer.points) + points
+
     await existingCustomer.save()
   }
 
@@ -59,6 +70,7 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response) => {
     bank,
     userId: req.user?.userId,
     customer,
+    points,
     enteredAt: req.body.enteredAt,
   })
 
@@ -234,17 +246,10 @@ export const returnItem = async (req: AuthenticatedRequest, res: Response) => {
   const enteredBy = req.user?.userName
   if (req.user?.role !== "admin") throw new UnAuthorizedError("Not permitted")
 
-  const {
-    newDiff,
-    newQty,
-    subTotal,
-    returned,
-    returnType,
-    productId,
-    price,
-    pcs,
-  } = req.body
+  const { newDiff, subTotal, returned, returnType, productId, price, pcs } =
+    req.body
 
+  console.log(price)
   const { orderId, itemId } = req.query
   if (!orderId || !itemId) throw new UnauthenticatedError("Invalid credentials")
 
@@ -284,6 +289,9 @@ export const returnItem = async (req: AuthenticatedRequest, res: Response) => {
   // calculate new order total
   const newTotal = Number(order.total) - Number(price * returned)
 
+  // calculate points
+  const newPoints = Number(newTotal * 0.005)
+
   // update order
   const updatedOrder = await Order.findOneAndUpdate(
     { _id: orderId },
@@ -292,9 +300,19 @@ export const returnItem = async (req: AuthenticatedRequest, res: Response) => {
       total: newTotal,
       cash: cashValue,
       bank: bankValue,
+      points: newPoints,
     },
     { new: true, runValidators: true }
   )
+
+  // update customer points
+  const customer = await Customer.findOne({ _id: order.customer?._id })
+  if (customer) {
+    const returnedItemPrice = Number(price * returned)
+    customer.points -= returnedItemPrice * 0.005
+
+    await customer.save()
+  }
 
   // create new cash record
   if (returnType === "cash") {

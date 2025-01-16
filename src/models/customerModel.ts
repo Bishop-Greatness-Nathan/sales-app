@@ -20,7 +20,14 @@ const CustomerSchema = new mongoose.Schema({
     type: String,
     default: "customer",
   },
-  bonus: Number,
+  points: {
+    type: Number,
+    default: 0,
+  },
+  pointsUsage: {
+    type: Number,
+    default: 0,
+  },
 })
 
 export default mongoose.model("Customer", CustomerSchema)

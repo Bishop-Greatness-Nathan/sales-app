@@ -23,7 +23,9 @@ exports.getStoreWorth = getStoreWorth;
 const calculateProfit = (orders, expenses) => {
     let grossProfit = 0;
     let totalReturned = 0;
+    let points = 0;
     orders.forEach((order) => {
+        points += order.points || 0;
         order.orderItems.forEach((item) => {
             grossProfit += item.diff;
             if (item.returned > 0) {
@@ -50,7 +52,8 @@ const calculateProfit = (orders, expenses) => {
         totalReturned,
         grossProfit,
         expenses: allExpenses,
-        netProfit: grossProfit - allExpenses,
+        points,
+        netProfit: grossProfit - allExpenses - points,
     };
     return analysis;
 };

@@ -8,16 +8,22 @@ function SingleCustomer({
   lastName,
   phoneNumber,
   debt,
+  points,
+  pointsUsage,
 }: CustomerType) {
   return (
     <div
-      className={`grid grid-cols-7 ${
+      className={`grid grid-cols-9 ${
         debt && debt > 0 ? "bg-red-100" : "bg-white"
       } mt-2 rounded shadow text-[8px] md:text-base p-1 md:p-2 capitalize`}
     >
       <p className='col-span-2 p-1 md:p-2 '>{firstName}</p>
       <p className='col-span-2 p-1 md:p-2'>{lastName}</p>
       <p className='col-span-2 p-1 md:p-2 '>{phoneNumber}</p>
+      <p className='p-1 md:p-2 '>
+        {new Intl.NumberFormat().format(Number(points))}
+      </p>
+      <p className='p-1 md:p-2 '>{pointsUsage}</p>
       <div className='p-1 md:p-2 text-[8px] md:text-base text-blue-500 hover:text-blue-800 relative'>
         <Link to={`../customer-activity/${_id}`}>
           {debt && debt > 0 ? "view debt" : "activity"}

@@ -31,8 +31,10 @@ export const calculateProfit = (
 ) => {
   let grossProfit: number = 0
   let totalReturned: number = 0
+  let points: number = 0
 
   orders.forEach((order) => {
+    points += order.points || 0
     order.orderItems.forEach((item) => {
       grossProfit += item.diff
       if (item.returned > 0) {
@@ -61,6 +63,7 @@ export const calculateProfit = (
     },
     { totalOrders: 0, totalCash: 0, totalBank: 0 }
   )
+
   const analysis: AnalysisType = {
     total: totals.totalOrders,
     totalBank: totals.totalBank,
@@ -68,7 +71,8 @@ export const calculateProfit = (
     totalReturned,
     grossProfit,
     expenses: allExpenses,
-    netProfit: grossProfit - allExpenses,
+    points,
+    netProfit: grossProfit - allExpenses - points,
   }
 
   return analysis

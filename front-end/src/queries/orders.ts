@@ -67,6 +67,7 @@ export const useReturnItem = () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
       queryClient.invalidateQueries({ queryKey: ["orders"] })
       queryClient.invalidateQueries({ queryKey: ["stock"] })
+      queryClient.invalidateQueries({ queryKey: ["customers"] })
     },
   })
 }

@@ -24,7 +24,14 @@ const CustomerSchema = new mongoose_1.default.Schema({
         type: String,
         default: "customer",
     },
-    bonus: Number,
+    points: {
+        type: Number,
+        default: 0,
+    },
+    pointsUsage: {
+        type: Number,
+        default: 0,
+    },
 });
 exports.default = mongoose_1.default.model("Customer", CustomerSchema);
 //# sourceMappingURL=customerModel.js.map

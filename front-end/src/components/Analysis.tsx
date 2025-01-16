@@ -78,6 +78,19 @@ function Analysis({ analysis }: { analysis: AnalysisType }) {
       {currentUser.role === "admin" && (
         <h2 className='grid grid-cols-2 gap-2 border border-b-[whitesmoke]'>
           <span className='border border-l-0 border-t-0 border-b-0 border-r-[whitesmoke] p-1'>
+            POINTS
+          </span>
+          <span className='p-1'>
+            {new Intl.NumberFormat("en-NG", {
+              style: "currency",
+              currency: "NGN",
+            }).format(analysis.points || 0)}
+          </span>
+        </h2>
+      )}
+      {currentUser.role === "admin" && (
+        <h2 className='grid grid-cols-2 gap-2 border border-b-[whitesmoke]'>
+          <span className='border border-l-0 border-t-0 border-b-0 border-r-[whitesmoke] p-1'>
             NET PROFIT
           </span>
           <span className='p-1'>

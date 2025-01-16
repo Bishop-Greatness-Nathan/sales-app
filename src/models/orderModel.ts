@@ -49,6 +49,7 @@ const OrderSchema = new mongoose.Schema(
       role: String,
       _id: String,
     },
+    points: Number,
     userId: {
       type: mongoose.Schema.ObjectId,
       ref: "User",

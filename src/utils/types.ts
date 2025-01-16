@@ -50,6 +50,7 @@ export type OrderType = {
   cash?: number
   bank?: number
   customer: CustomerType
+  points?: number
   createdAt?: string
 }
 
@@ -61,6 +62,7 @@ export type AnalysisType = {
   netProfit: number
   totalCash: number
   totalBank: number
+  points?: number
 }
 
 export type ExpenseType = {

@@ -15,6 +15,7 @@ function AllCustomers() {
   const [debtors, setDebtors] = useState(false)
   const { data, isLoading, isError } = useFilteredCustomers(customerId, debtors)
 
+  console.log(data)
   if (isError) return <h1>There was an error...</h1>
 
   return (
@@ -64,7 +65,7 @@ function AllCustomers() {
           <h1 className='text-center font-bold'>No customers found</h1>
         ) : (
           <>
-            <div className='mt-2 grid grid-cols-7 sticky top-0 border border-white border-b-slate-600 border-t-slate-600 p-1 md:p-2 font-bold bg-white '>
+            <div className='mt-2 grid grid-cols-9 sticky top-0 border border-white border-b-slate-600 border-t-slate-600 p-1 md:p-2 font-bold bg-white '>
               <h2 className='col-span-2 text-[8px] md:text-xs lg:text-base p-1 md:p-2 text-left'>
                 First Name
               </h2>
@@ -73,6 +74,12 @@ function AllCustomers() {
               </h2>
               <h2 className='col-span-2 text-[8px] md:text-xs lg:text-base text-left p-1 md:p-2'>
                 Phone Number
+              </h2>
+              <h2 className='text-[8px] md:text-xs lg:text-base text-left p-1 md:p-2'>
+                Points
+              </h2>
+              <h2 className='text-[8px] md:text-xs lg:text-base text-left p-1 md:p-2'>
+                Usage
               </h2>
             </div>
             {/* PRODUCTS */}

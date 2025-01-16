@@ -31,6 +31,8 @@ function AllOrders() {
     userId: userId,
   })
 
+  console.log(data)
+
   const { data: allUsers } = useUsers()
 
   // FILTER ORDERS

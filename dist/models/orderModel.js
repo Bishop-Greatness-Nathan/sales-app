@@ -51,6 +51,7 @@ const OrderSchema = new mongoose_1.default.Schema({
         role: String,
         _id: String,
     },
+    points: Number,
     userId: {
         type: mongoose_1.default.Schema.ObjectId,
         ref: "User",

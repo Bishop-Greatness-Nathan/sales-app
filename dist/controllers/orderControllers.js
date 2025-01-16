@@ -32,6 +32,7 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         throw new customErrors_1.NotFoundError("Missing fields");
     req.body.enteredAt = (0, dayjs_1.default)(new Date(Date.now())).format("YYYY-MM-DD");
     const orderItems = items;
+    let points = 0;
     // add customer debt
     if (balance > 0) {
         const existingCustomer = yield customerModel_1.default.findOne({
@@ -40,6 +41,15 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         if (!existingCustomer)
             throw new customErrors_1.NotFoundError("customer not found");
         existingCustomer.debt += Number(balance);
+        yield existingCustomer.save();
+    }
+    // loyalty points
+    if (balance === 0 && customer.phoneNumber !== "") {
+        const existingCustomer = yield customerModel_1.default.findOne({ _id: customer._id });
+        if (!existingCustomer)
+            throw new customErrors_1.NotFoundError("customer not found");
+        points = total * 0.005;
+        existingCustomer.points = Number(existingCustomer.points) + points;
         yield existingCustomer.save();
     }
     // check for correct product
@@ -59,6 +69,7 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         bank,
         userId: (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId,
         customer,
+        points,
         enteredAt: req.body.enteredAt,
     });
     if (cash > 0) {
@@ -197,12 +208,13 @@ const getProfit = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getProfit = getProfit;
 // RETURN ITEM
 const returnItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a, _b, _c;
     const enteredAt = (0, dayjs_1.default)(new Date(Date.now())).format("YYYY-MM-DD");
     const enteredBy = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userName;
     if (((_b = req.user) === null || _b === void 0 ? void 0 : _b.role) !== "admin")
         throw new customErrors_1.UnAuthorizedError("Not permitted");
-    const { newDiff, newQty, subTotal, returned, returnType, productId, price, pcs, } = req.body;
+    const { newDiff, subTotal, returned, returnType, productId, price, pcs } = req.body;
+    console.log(price);
     const { orderId, itemId } = req.query;
     if (!orderId || !itemId)
         throw new customErrors_1.UnauthenticatedError("Invalid credentials");
@@ -236,13 +248,23 @@ const returnItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         : Number(order.bank);
     // calculate new order total
     const newTotal = Number(order.total) - Number(price * returned);
+    // calculate points
+    const newPoints = Number(newTotal * 0.005);
     // update order
     const updatedOrder = yield orderModel_1.default.findOneAndUpdate({ _id: orderId }, {
         orderItems: newOrderItems,
         total: newTotal,
         cash: cashValue,
         bank: bankValue,
+        points: newPoints,
     }, { new: true, runValidators: true });
+    // update customer points
+    const customer = yield customerModel_1.default.findOne({ _id: (_c = order.customer) === null || _c === void 0 ? void 0 : _c._id });
+    if (customer) {
+        const returnedItemPrice = Number(price * returned);
+        customer.points -= returnedItemPrice * 0.005;
+        yield customer.save();
+    }
     // create new cash record
     if (returnType === "cash") {
         yield cashModel_1.default.create({
