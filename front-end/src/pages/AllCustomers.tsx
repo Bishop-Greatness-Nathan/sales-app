@@ -60,10 +60,10 @@ function AllCustomers() {
           Customers
         </h1>
         <button
-          className='font-semibold text-[var(--primary)]'
+          className='font-semibold text-xs md:text-base text-[var(--primary)]'
           onClick={resetPoints}
         >
-          {isPending ? "Reseting..." : "Reset Points"}
+          {isPending ? "Resetting..." : "Reset Points"}
         </button>
       </div>
       <section className='pb-5'>
