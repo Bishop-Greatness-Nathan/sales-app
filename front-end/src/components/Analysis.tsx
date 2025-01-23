@@ -3,6 +3,7 @@ import { AnalysisType } from "../utils/types"
 
 function Analysis({ analysis }: { analysis: AnalysisType }) {
   const { currentUser } = useDashboardContext()
+
   return (
     <div className='w-[50%] lg:w-[40%] text-[8px] md:text-sm lg:text-base border border-[whitesmoke] rounded bg-white mb-5'>
       <h2 className='grid grid-cols-2 gap-2 border border-b-[whitesmoke]'>
@@ -36,6 +37,17 @@ function Analysis({ analysis }: { analysis: AnalysisType }) {
             style: "currency",
             currency: "NGN",
           }).format((analysis.totalBank as number) || 0)}
+        </span>
+      </h2>
+      <h2 className='grid grid-cols-2 gap-2 border border-b-[whitesmoke]'>
+        <span className='border border-l-0 border-t-0 border-b-0 border-r-[whitesmoke] p-1'>
+          USED POINTS
+        </span>
+        <span className='p-1'>
+          {new Intl.NumberFormat("en-NG", {
+            style: "currency",
+            currency: "NGN",
+          }).format((analysis.usedPoints as number) || 0)}
         </span>
       </h2>
       <h2 className='grid grid-cols-2 gap-2 border border-b-[whitesmoke]'>

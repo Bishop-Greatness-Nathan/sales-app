@@ -67,6 +67,7 @@ function CreateOrder() {
   const [cash, setCash] = useState(0)
   const [bank, setBank] = useState(0)
   const [balance, setBalance] = useState(0)
+  const [usedPoints, setUsedPoints] = useState(0)
   const [customer, setCustomer] = useState<CustomerType>({
     firstName: "",
     lastName: "",
@@ -181,10 +182,29 @@ function CreateOrder() {
 
   // calculate balance
   const getBalance = () => {
-    if (transaction === "cash") {
+    if (transaction === "cash" || transaction === "points") {
       setBalance(0)
     } else {
       setBalance(total - (cash + bank))
+    }
+  }
+
+  // reset cash/bank
+  const resetCash_Bank = () => {
+    if (transaction === "points") {
+      setCash(0)
+      setBank(0)
+      setBalance(0)
+    }
+  }
+
+  // calculate used points
+  const calcUsedPoints = () => {
+    if (transaction === "cash" || transaction === "credit") {
+      setUsedPoints(0)
+    }
+    if (transaction === "points" && Number(customer.points) >= total) {
+      setUsedPoints(total)
     }
   }
 
@@ -205,7 +225,24 @@ function CreateOrder() {
       return
     }
 
-    const data = { items: orderItems, total, cash, bank, balance, customer }
+    if (transaction === "points" && customer.firstName === "") {
+      toast.error("please enter customer for this transaction")
+      return
+    }
+    if (transaction === "points" && usedPoints < total) {
+      toast.error("you don't have enough points for this transaction")
+      return
+    }
+
+    const data = {
+      items: orderItems,
+      total,
+      cash,
+      bank,
+      balance,
+      usedPoints,
+      customer,
+    }
     mutate(data)
   }
 
@@ -229,7 +266,12 @@ function CreateOrder() {
 
   useEffect(() => {
     getBalance()
+    resetCash_Bank()
   }, [transaction, cash, bank, total])
+
+  useEffect(() => {
+    calcUsedPoints()
+  }, [customer, transaction, total])
 
   useEffect(() => {
     localStorage.setItem("orderItems", JSON.stringify(orderItems))

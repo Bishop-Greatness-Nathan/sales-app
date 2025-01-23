@@ -50,6 +50,7 @@ const OrderSchema = new mongoose.Schema(
       _id: String,
     },
     points: Number,
+    usedPoints: Number,
     userId: {
       type: mongoose.Schema.ObjectId,
       ref: "User",

@@ -24,8 +24,10 @@ const calculateProfit = (orders, expenses) => {
     let grossProfit = 0;
     let totalReturned = 0;
     let points = 0;
+    let usedPoints = 0;
     orders.forEach((order) => {
         points += order.points || 0;
+        usedPoints += order.usedPoints || 0;
         order.orderItems.forEach((item) => {
             grossProfit += item.diff;
             if (item.returned > 0) {
@@ -49,6 +51,7 @@ const calculateProfit = (orders, expenses) => {
         total: totals.totalOrders,
         totalBank: totals.totalBank,
         totalCash: totals.totalCash,
+        usedPoints,
         totalReturned,
         grossProfit,
         expenses: allExpenses,

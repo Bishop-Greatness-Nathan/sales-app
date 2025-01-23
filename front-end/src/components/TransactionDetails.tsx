@@ -7,6 +7,8 @@ function TransactionDetails() {
   const {
     total,
     transaction,
+    cash,
+    bank,
     balance,
     setCash,
     setBank,
@@ -27,6 +29,7 @@ function TransactionDetails() {
         >
           <option value='cash'>Cash</option>
           <option value='credit'>Credit</option>
+          <option value='points'>Points</option>
         </select>
       </div>
 
@@ -69,35 +72,56 @@ function TransactionDetails() {
           </span>
         </div>
         {/* CASH */}
-        <div className='grid grid-cols-2'>
+        <div
+          className={`${transaction === "points" && "hidden"} grid grid-cols-2`}
+        >
           <span>Cash</span>
           <input
             type='number'
             name='cash'
             min={0}
-            // value={cash}
+            value={cash}
             onChange={(e) => setCash(Number(e.target.value))}
             className='border outline-none'
           />
         </div>
         {/* BANK */}
-        <div className='grid grid-cols-2'>
+        <div
+          className={`${transaction === "points" && "hidden"} grid grid-cols-2`}
+        >
           <span>Bank</span>
           <input
             type='number'
             name='bank'
             min={0}
-            // value={bank}
+            value={bank}
             onChange={(e) => setBank(Number(e.target.value))}
             className='border outline-none'
           />
         </div>
+        {/* POINTS */}
         <div
           className={`${
-            transaction === "cash" ? "hidden" : "block"
+            (transaction === "cash" || transaction === "credit") && "hidden"
+          } grid grid-cols-2`}
+        >
+          <span>Points</span>
+          <input
+            type='number'
+            name='bank'
+            value={customer.points || 0}
+            className='border outline-none'
+            readOnly
+          />
+        </div>
+        {/* BALANCE*/}
+        <div
+          className={`${
+            transaction === "cash" || transaction === "points"
+              ? "hidden"
+              : "block"
           } mt-1 bg-white`}
         >
-          {/* BALANCE*/}
           <div className='grid grid-cols-2'>
             <h2>Balance</h2>
             <span>

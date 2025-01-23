@@ -7,6 +7,7 @@ const router = (0, express_1.Router)();
 router.post("/", permissions_1.permissions, customerControllers_1.createCustomer);
 router.get("/", customerControllers_1.getAllCustomers);
 router.get("/filter", customerControllers_1.filterCustomers);
+router.get("/reset", permissions_1.permissions, customerControllers_1.resetPointsUsage);
 router.get("/:id", permissions_1.permissions, customerControllers_1.getSingleCustomer);
 router.patch("/:id", permissions_1.permissions, customerControllers_1.updateCustomer);
 router.delete("/:id", permissions_1.permissions, customerControllers_1.deleteCustomer);

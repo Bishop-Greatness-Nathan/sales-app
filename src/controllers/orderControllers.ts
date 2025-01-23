@@ -1,4 +1,5 @@
 import {
+  BadRequestError,
   NotFoundError,
   UnAuthorizedError,
   UnauthenticatedError,
@@ -19,7 +20,7 @@ import { ExpenseType, OrderType } from "../utils/types"
 
 // CREATE ORDER
 export const createOrder = async (req: AuthenticatedRequest, res: Response) => {
-  const { total, items, balance, cash, bank, customer } = req.body
+  const { total, items, balance, cash, bank, usedPoints, customer } = req.body
   if (!total || !items) throw new NotFoundError("Missing fields")
 
   req.body.enteredAt = dayjs(new Date(Date.now())).format("YYYY-MM-DD")
@@ -28,7 +29,7 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response) => {
   let points: number = 0
 
   // add customer debt
-  if (balance > 0) {
+  if (balance > 0 && customer.phoneNumber !== "") {
     const existingCustomer = await Customer.findOne({
       _id: customer._id,
     })
@@ -38,11 +39,38 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response) => {
   }
 
   // loyalty points
-  if (balance === 0 && customer.phoneNumber !== "") {
+  if (balance === 0 && customer.phoneNumber !== "" && usedPoints === 0) {
     const existingCustomer = await Customer.findOne({ _id: customer._id })
     if (!existingCustomer) throw new NotFoundError("customer not found")
     points = total * 0.005
     existingCustomer.points = Number(existingCustomer.points) + points
+
+    await existingCustomer.save()
+  }
+
+  // points usage
+  if (
+    usedPoints > 0 &&
+    balance === 0 &&
+    cash === 0 &&
+    bank === 0 &&
+    customer.phoneNumber !== ""
+  ) {
+    const existingCustomer = await Customer.findOne({ _id: customer._id })
+    if (!existingCustomer) throw new NotFoundError("customer not found")
+
+    if (existingCustomer.debt > 0) {
+      throw new BadRequestError("this customer is a debtor")
+    }
+
+    if (existingCustomer.pointsUsage < 2) {
+      existingCustomer.points -= Number(usedPoints)
+      existingCustomer.pointsUsage += 1
+    } else {
+      throw new BadRequestError(
+        "this customer has exceeded points usage for the month"
+      )
+    }
 
     await existingCustomer.save()
   }
@@ -68,6 +96,7 @@ export const createOrder = async (req: AuthenticatedRequest, res: Response) => {
     balance,
     cash,
     bank,
+    usedPoints,
     userId: req.user?.userId,
     customer,
     points,

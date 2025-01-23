@@ -90,3 +90,14 @@ export const deleteCustomer = async (
   await Customer.findOneAndDelete({ _id: req.params.id })
   res.status(StatusCodes.OK).json({ msg: "customer deleted" })
 }
+
+export const resetPointsUsage = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  //  const exp = new Date(Date.now())
+  //  console.log(exp.getDate())
+  await Customer.updateMany({ pointsUsage: { $gt: 0 } }, { pointsUsage: 0 })
+
+  res.status(StatusCodes.OK).json({ msg: "points usage reset successful" })
+}

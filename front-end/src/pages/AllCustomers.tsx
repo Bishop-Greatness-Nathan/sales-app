@@ -1,26 +1,71 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { CustomerType } from "../utils/types"
 import SingleCustomer from "../components/SingleCustomer"
-import { useFilteredCustomers } from "../queries/customers"
+import { useFilteredCustomers, useResetPointsUsage } from "../queries/customers"
 import Loading from "../components/Loading"
 import CreateCustomerModal from "../components/modals/CreateCustomerModal"
 import { useDashboardContext } from "./DashboardLayout"
 import CustomerSearchModal from "../components/modals/CustomerSearchModal"
+import { isAxiosError } from "axios"
+import { toast } from "react-toastify"
 
 function AllCustomers() {
-  const { showCreateCustomerModal, setShowCreateCustomerModal } =
+  const { showCreateCustomerModal, setShowCreateCustomerModal, currentUser } =
     useDashboardContext()
   const [customerId, setCustomerId] = useState("all")
   const [showCustomerSearchModal, setShowCustomerSearchModal] = useState(false)
   const [debtors, setDebtors] = useState(false)
+
   const { data, isLoading, isError } = useFilteredCustomers(customerId, debtors)
 
-  console.log(data)
+  const {
+    mutate,
+    isPending,
+    isSuccess,
+    isError: resetError,
+    error,
+  } = useResetPointsUsage()
+
+  const resetPoints = () => {
+    if (currentUser.role === "admin") {
+      mutate()
+    } else {
+      toast.error("not authorized to perform this task")
+    }
+  }
+
+  // responses
+  const responses = () => {
+    if (resetError) {
+      if (isAxiosError(error)) {
+        toast.error(error?.response?.data?.msg)
+      }
+    }
+    if (isSuccess) {
+      toast.success("points reset is successful")
+      location.reload()
+    }
+  }
+
+  useEffect(() => {
+    responses()
+  }, [isSuccess, resetError])
+
   if (isError) return <h1>There was an error...</h1>
 
   return (
     <main>
-      <h1 className='md:text-2xl lg:text-4xl mb-1 mt-5 font-bold'>Customers</h1>
+      <div className='flex justify-between items-center'>
+        <h1 className='md:text-2xl lg:text-4xl mb-1 mt-5 font-bold'>
+          Customers
+        </h1>
+        <button
+          className='font-semibold text-[var(--primary)]'
+          onClick={resetPoints}
+        >
+          {isPending ? "Reseting..." : "Reset Points"}
+        </button>
+      </div>
       <section className='pb-5'>
         <div className='flex justify-end items-center space-x-2 text-red-500 font-semibold'>
           <label className='text-xs md:text-sm lg:text-base'>

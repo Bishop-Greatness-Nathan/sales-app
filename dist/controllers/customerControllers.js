@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteCustomer = exports.updateCustomer = exports.getSingleCustomer = exports.getAllCustomers = exports.filterCustomers = exports.createCustomer = void 0;
+exports.resetPointsUsage = exports.deleteCustomer = exports.updateCustomer = exports.getSingleCustomer = exports.getAllCustomers = exports.filterCustomers = exports.createCustomer = void 0;
 const customErrors_1 = require("../errors/customErrors");
 const http_status_codes_1 = require("http-status-codes");
 const customerModel_1 = __importDefault(require("../models/customerModel"));
@@ -79,4 +79,11 @@ const deleteCustomer = (req, res) => __awaiter(void 0, void 0, void 0, function*
     res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "customer deleted" });
 });
 exports.deleteCustomer = deleteCustomer;
+const resetPointsUsage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //  const exp = new Date(Date.now())
+    //  console.log(exp.getDate())
+    yield customerModel_1.default.updateMany({ pointsUsage: { $gt: 0 } }, { pointsUsage: 0 });
+    res.status(http_status_codes_1.StatusCodes.OK).json({ msg: "points usage reset successful" });
+});
+exports.resetPointsUsage = resetPointsUsage;
 //# sourceMappingURL=customerControllers.js.map

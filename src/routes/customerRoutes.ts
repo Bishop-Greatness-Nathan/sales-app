@@ -6,6 +6,7 @@ import {
   getSingleCustomer,
   updateCustomer,
   deleteCustomer,
+  resetPointsUsage,
 } from "../controllers/customerControllers"
 import { permissions } from "../middleware/permissions"
 
@@ -16,6 +17,8 @@ router.post("/", permissions, createCustomer)
 router.get("/", getAllCustomers)
 
 router.get("/filter", filterCustomers)
+
+router.get("/reset", permissions, resetPointsUsage)
 
 router.get("/:id", permissions, getSingleCustomer)
 

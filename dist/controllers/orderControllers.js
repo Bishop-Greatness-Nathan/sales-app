@@ -27,14 +27,14 @@ const methods_1 = require("../utils/methods");
 // CREATE ORDER
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
-    const { total, items, balance, cash, bank, customer } = req.body;
+    const { total, items, balance, cash, bank, usedPoints, customer } = req.body;
     if (!total || !items)
         throw new customErrors_1.NotFoundError("Missing fields");
     req.body.enteredAt = (0, dayjs_1.default)(new Date(Date.now())).format("YYYY-MM-DD");
     const orderItems = items;
     let points = 0;
     // add customer debt
-    if (balance > 0) {
+    if (balance > 0 && customer.phoneNumber !== "") {
         const existingCustomer = yield customerModel_1.default.findOne({
             _id: customer._id,
         });
@@ -44,12 +44,33 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         yield existingCustomer.save();
     }
     // loyalty points
-    if (balance === 0 && customer.phoneNumber !== "") {
+    if (balance === 0 && customer.phoneNumber !== "" && usedPoints === 0) {
         const existingCustomer = yield customerModel_1.default.findOne({ _id: customer._id });
         if (!existingCustomer)
             throw new customErrors_1.NotFoundError("customer not found");
         points = total * 0.005;
         existingCustomer.points = Number(existingCustomer.points) + points;
+        yield existingCustomer.save();
+    }
+    // points usage
+    if (usedPoints > 0 &&
+        balance === 0 &&
+        cash === 0 &&
+        bank === 0 &&
+        customer.phoneNumber !== "") {
+        const existingCustomer = yield customerModel_1.default.findOne({ _id: customer._id });
+        if (!existingCustomer)
+            throw new customErrors_1.NotFoundError("customer not found");
+        if (existingCustomer.debt > 0) {
+            throw new customErrors_1.BadRequestError("this customer is a debtor");
+        }
+        if (existingCustomer.pointsUsage < 2) {
+            existingCustomer.points -= Number(usedPoints);
+            existingCustomer.pointsUsage += 1;
+        }
+        else {
+            throw new customErrors_1.BadRequestError("this customer has exceeded points usage for the month");
+        }
         yield existingCustomer.save();
     }
     // check for correct product
@@ -67,6 +88,7 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         balance,
         cash,
         bank,
+        usedPoints,
         userId: (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId,
         customer,
         points,

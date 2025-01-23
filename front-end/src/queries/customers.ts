@@ -5,6 +5,7 @@ import {
   singleCustomer,
   editCustomer,
   fetchFilteredCustomers,
+  resetPointsUsage,
 } from "../api/customers"
 
 // get all customers
@@ -54,5 +55,14 @@ export const useEditCustomer = () => {
       } = data
       queryClient.invalidateQueries({ queryKey: ["customer", _id] })
     },
+  })
+}
+
+// reset points usage
+export const useResetPointsUsage = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: resetPointsUsage,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["customers"] }),
   })
 }

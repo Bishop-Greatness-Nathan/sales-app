@@ -46,3 +46,8 @@ export const editCustomer = async ({
 }) => {
   return await customFetch.patch(`/customer/${id}`, data)
 }
+
+// RESET POINTS USAGE
+export const resetPointsUsage = async () => {
+  return await customFetch.get("/customer/reset")
+}
