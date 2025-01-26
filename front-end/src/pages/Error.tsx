@@ -3,7 +3,7 @@ import errorImg from "../assets/images/error_img.svg"
 
 function Error() {
   const error = useRouteError()
-
+  console.log(error)
   // Narrowing the type of `error`
   if (typeof error === "object" && error !== null && "status" in error) {
     const status = (error as { status: number }).status

@@ -46,8 +46,6 @@ const morgan_1 = __importDefault(require("morgan"));
 const helmet_1 = __importDefault(require("helmet"));
 const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize"));
 const app = (0, express_1.default)();
-// middlewares
-const notFound_1 = __importDefault(require("./middleware/notFound"));
 const errorHandler_1 = __importDefault(require("./middleware/errorHandler"));
 const authMiddleware_1 = require("./middleware/authMiddleware");
 // routers
@@ -86,12 +84,12 @@ app.use("/api/v1/endofday", authMiddleware_1.authenticateUser, endOfDayRoutes_1.
 //   res.sendFile(path.resolve(__dirname, "./public", "index.html"))
 // })
 app.get("*", (req, res) => {
-    res.sendFile(path_1.default.resolve(__dirname, "../front-end", "index.html"));
+    res.sendFile(path_1.default.resolve(__dirname, "../front-end/dist", "index.html"));
 });
-// app.use("*", (req, res) => {
-//   res.status(404).json({ msg: "not found" })
-// })
-app.use(notFound_1.default);
+app.use("*", (req, res) => {
+    res.status(404).json({ msg: "not found" });
+});
+// app.use(notFoundError)
 app.use(errorHandler_1.default);
 const port = process.env.PORT || 4000;
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
