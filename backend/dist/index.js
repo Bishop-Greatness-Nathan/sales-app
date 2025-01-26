@@ -64,7 +64,7 @@ if (process.env.NODE_ENV === "development") {
     app.use((0, morgan_1.default)("dev"));
 }
 // app.use(express.static(path.resolve(__dirname, "./public")))
-app.use(express_1.default.static(path_1.default.resolve(__dirname, "../front-end/dist")));
+app.use(express_1.default.static(path_1.default.resolve(__dirname, "../../front-end/dist")));
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use((0, helmet_1.default)());
@@ -84,7 +84,7 @@ app.use("/api/v1/endofday", authMiddleware_1.authenticateUser, endOfDayRoutes_1.
 //   res.sendFile(path.resolve(__dirname, "./public", "index.html"))
 // })
 app.get("*", (req, res) => {
-    res.sendFile(path_1.default.resolve(__dirname, "../front-end/dist", "index.html"));
+    res.sendFile(path_1.default.resolve(__dirname, "../../front-end/dist", "index.html"));
 });
 app.use("*", (req, res) => {
     res.status(404).json({ msg: "not found" });
