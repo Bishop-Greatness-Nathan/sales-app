@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/Bishop-Greatness-Nathan/sales-app#readme",
   "dependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "express": "^4.21.2"
   }
 }
