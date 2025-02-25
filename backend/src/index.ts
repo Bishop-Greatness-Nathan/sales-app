@@ -68,13 +68,14 @@ app.use("*", (req, res) => {
 
 app.use(errorHandler)
 
-const port = process.env.PORT || 4000
+const port = Number(process.env.PORT) || 4000
+const host = process.env.HOST || "0.0.0.0"
 
 const start = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URL as string)
 
-    app.listen(port, async () => {
+    app.listen(port, host, async () => {
       console.log("connected to DB")
       console.log(`server is listening on port ${port}`)
     })

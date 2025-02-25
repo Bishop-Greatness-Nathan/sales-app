@@ -101,11 +101,12 @@ app.use("*", (req, res) => {
 });
 // app.use(notFoundError)
 app.use(errorHandler_1.default);
-const port = process.env.PORT || 4000;
+const port = Number(process.env.PORT) || 4000;
+const host = process.env.HOST || "0.0.0.0";
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield mongoose_1.default.connect(process.env.MONGO_URL);
-        app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
+        app.listen(port, host, () => __awaiter(void 0, void 0, void 0, function* () {
             console.log("connected to DB");
             console.log(`server is listening on port ${port}`);
         }));
