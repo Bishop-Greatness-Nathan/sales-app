@@ -105,25 +105,14 @@ const port = process.env.PORT || 4000;
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield mongoose_1.default.connect(process.env.MONGO_URL);
-        app.listen(5000, "0.0.0.0", () => __awaiter(void 0, void 0, void 0, function* () {
+        app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
             console.log("connected to DB");
-            console.log(`server is listening on port 5000`);
+            console.log(`server is listening on port ${port}`);
         }));
     }
     catch (error) {
         console.log(error);
     }
 });
-// const start = async () => {
-//   try {
-//     await mongoose.connect(process.env.MONGO_URL as string)
-//     app.listen(port, async () => {
-//       console.log("connected to DB")
-//       console.log(`server is listening on port ${port}`)
-//     })
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
 start();
 //# sourceMappingURL=index.js.map
