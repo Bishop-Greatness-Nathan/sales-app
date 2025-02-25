@@ -74,13 +74,25 @@ const start = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URL as string)
 
-    app.listen(port, async () => {
+    app.listen(5000, "0.0.0.0", async () => {
       console.log("connected to DB")
-      console.log(`server is listening on port ${port}`)
+      console.log(`server is listening on port 5000`)
     })
   } catch (error) {
     console.log(error)
   }
 }
+// const start = async () => {
+//   try {
+//     await mongoose.connect(process.env.MONGO_URL as string)
+
+//     app.listen(port, async () => {
+//       console.log("connected to DB")
+//       console.log(`server is listening on port ${port}`)
+//     })
+//   } catch (error) {
+//     console.log(error)
+//   }
+// }
 
 start()
