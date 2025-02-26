@@ -32,7 +32,7 @@ import endOfDayRouter from "./routes/endOfDayRoutes"
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"))
 }
-// app.use(express.static(path.resolve(__dirname, "./public")))
+app.use(express.static(path.resolve(__dirname, "./public")))
 
 // app.use(express.static(path.resolve(__dirname, "../../front-end/dist")))
 
@@ -53,9 +53,9 @@ app.use("/api/v1/bank", authenticateUser, bankRouter)
 app.use("/api/v1/category", authenticateUser, categoryRouter)
 app.use("/api/v1/endofday", authenticateUser, endOfDayRouter)
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.resolve(__dirname, "./public", "index.html"))
-// })
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "./public", "index.html"))
+})
 // app.get("*", (req, res) => {
 //   res.sendFile(path.resolve(__dirname, "../../front-end/dist", "index.html"))
 // })
@@ -64,7 +64,7 @@ app.use("/api/v1/endofday", authenticateUser, endOfDayRouter)
 //   res.status(404).json({ msg: "not found" })
 // })
 
-// app.use(notFoundError)
+app.use(notFoundError)
 
 app.use(errorHandler)
 
