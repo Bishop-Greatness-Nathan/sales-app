@@ -75,8 +75,8 @@ const endOfDayRoutes_1 = __importDefault(require("./routes/endOfDayRoutes"));
 if (process.env.NODE_ENV === "development") {
     app.use((0, morgan_1.default)("dev"));
 }
-app.use(express_1.default.static(path_1.default.resolve(__dirname, "./public")));
-// app.use(express.static(path.resolve(__dirname, "../../front-end/dist")))
+// app.use(express.static(path.resolve(__dirname, "./public")))
+app.use(express_1.default.static(path_1.default.resolve(__dirname, "../../front-end/dist")));
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use((0, helmet_1.default)());
@@ -92,23 +92,22 @@ app.use("/api/v1/cash", authMiddleware_1.authenticateUser, cashRoutes_1.default)
 app.use("/api/v1/bank", authMiddleware_1.authenticateUser, bankRoutes_1.default);
 app.use("/api/v1/category", authMiddleware_1.authenticateUser, categoryRoutes_1.default);
 app.use("/api/v1/endofday", authMiddleware_1.authenticateUser, endOfDayRoutes_1.default);
-app.get("*", (req, res) => {
-    res.sendFile(path_1.default.resolve(__dirname, "./public", "index.html"));
-});
 // app.get("*", (req, res) => {
-//   res.sendFile(path.resolve(__dirname, "../../front-end/dist", "index.html"))
+//   res.sendFile(path.resolve(__dirname, "./public", "index.html"))
 // })
+app.get("*", (req, res) => {
+    res.sendFile(path_1.default.resolve(__dirname, "../../front-end/dist", "index.html"));
+});
 // app.use("*", (req, res) => {
 //   res.status(404).json({ msg: "not found" })
 // })
 app.use(notFound_1.default);
 app.use(errorHandler_1.default);
 const port = Number(process.env.PORT) || 4000;
-const host = process.env.HOST || "0.0.0.0";
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield mongoose_1.default.connect(process.env.MONGO_URL);
-        app.listen(port, host, () => __awaiter(void 0, void 0, void 0, function* () {
+        app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
             console.log("connected to DB");
             console.log(`server is listening on port ${port}`);
         }));
