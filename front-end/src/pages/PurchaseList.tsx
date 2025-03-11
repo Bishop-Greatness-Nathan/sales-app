@@ -18,7 +18,9 @@ function PurchaseList() {
 
   const { data, isLoading, isError, error } = useProductQuery(
     "All Products",
-    productCategory
+    productCategory,
+    Infinity,
+    1
   )
 
   // get product list

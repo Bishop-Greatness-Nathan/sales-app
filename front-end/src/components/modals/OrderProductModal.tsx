@@ -12,7 +12,9 @@ function OrderProductModal() {
 
   const { data, isLoading, isError, error } = useProductQuery(
     "All Products",
-    "All Products"
+    "All Products",
+    Infinity,
+    1
   )
 
   function selectName(e: MouseEvent<HTMLElement>) {

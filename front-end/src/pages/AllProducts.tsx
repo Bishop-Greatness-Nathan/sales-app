@@ -12,10 +12,14 @@ function AllProducts() {
   const [showProductModal, setShowProductModal] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState("All Products")
   const [productCategory, setProductCategory] = useState("All Products")
+  const [limit] = useState(50)
+  const [page, setPage] = useState(1)
 
   const { data, isLoading, isError } = useProductQuery(
     selectedProduct,
-    productCategory
+    productCategory,
+    limit,
+    page
   )
 
   const { data: categories } = useCategoryQuery()
@@ -37,7 +41,10 @@ function AllProducts() {
 
         <select
           className='border-none rounded p-1 outline-0'
-          onChange={(e) => setProductCategory(e.target.value)}
+          onChange={(e) => {
+            setProductCategory(e.target.value)
+            setPage(1)
+          }}
         >
           {filterBtns.map((btn, index) => {
             return (
@@ -96,7 +103,8 @@ function AllProducts() {
             <h1 className='mt-5 text-xs md:text-sm lg:text-base'>
               Count:{" "}
               {new Intl.NumberFormat().format(
-                Number(data && data?.products.length)
+                // Number(data && data?.products.length)
+                Number(data && data?.count)
               )}{" "}
               product
               {data && data?.products?.length !== 1 ? "s" : ""}
@@ -132,6 +140,24 @@ function AllProducts() {
             }
           </section>
         </>
+      )}
+
+      {/* PAGINATION */}
+      {data && data?.numOfPages > 1 && (
+        <div className='flex justify-between mt-1 font-semibold text-xs lg:text-base text-[var(--primary)]'>
+          <button onClick={() => setPage(page - 1)} disabled={page === 1}>
+            prev
+          </button>
+          <span>
+            page {page} of {data && data.numOfPages}
+          </span>
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={page === data?.numOfPages}
+          >
+            next
+          </button>
+        </div>
       )}
     </main>
   )

@@ -14,7 +14,9 @@ function SearchProductModal({
 
   const { data, isLoading, isError } = useProductQuery(
     "All Products",
-    "All Products"
+    "All Products",
+    Infinity,
+    1
   )
 
   const productNames = [

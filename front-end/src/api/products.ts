@@ -4,13 +4,22 @@ import { ProductTypes, WorthType } from "../utils/types"
 // FETCH PRODUCTS
 export const fetchProducts = async (
   product: string,
-  category: string
-): Promise<{ products: ProductTypes[]; worth: WorthType }> => {
+  category: string,
+  limit: number,
+  page: number
+): Promise<{
+  products: ProductTypes[]
+  worth: WorthType
+  count: number
+  numOfPages: number
+}> => {
   const {
-    data: { products, worth },
-  } = await customFetch.get(`/product?product=${product}&category=${category}`)
+    data: { products, worth, count, numOfPages },
+  } = await customFetch.get(
+    `/product?product=${product}&category=${category}&limit=${limit}&page=${page}`
+  )
 
-  return { products, worth }
+  return { products, worth, count, numOfPages }
 }
 
 // CREATE PRODUCT

@@ -38,46 +38,35 @@ const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     res.status(http_status_codes_1.StatusCodes.CREATED).json({ msg: "Product created" });
 });
 exports.createProduct = createProduct;
-// GET ALL PRODUCTS
+// GET ALL PRODUCTS + QUERY
 const getProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { product, category } = req.query;
-    if (category === "All Products" && product === "All Products") {
-        const products = yield productModel_1.default.find({})
-            .sort({ name: 1 })
-            .lean();
-        const worth = (0, methods_1.getWorth)(products);
-        res.status(http_status_codes_1.StatusCodes.OK).json({ products, worth });
-        return;
+    const { product, category, limit, page } = req.query;
+    // Pagination
+    const pageLimit = Number(limit);
+    const pageNumber = Number(page) || 1;
+    const skip = (pageNumber - 1) * pageLimit;
+    let query = {}; // Query object for filtering
+    if (category !== "All Products") {
+        query.category = category;
     }
-    else if (category === "All Products" && product !== "All Products") {
-        const products = yield productModel_1.default.find({ name: product })
-            .sort({
-            name: 1,
-        })
-            .lean();
-        const worth = (0, methods_1.getWorth)(products);
-        res.status(http_status_codes_1.StatusCodes.OK).json({ products, worth });
-        return;
+    if (product !== "All Products") {
+        query.name = product;
     }
-    else if (category !== "All Products" && product === "All Products") {
-        const products = yield productModel_1.default.find({ category })
-            .sort({
-            name: 1,
-        })
-            .lean();
-        const worth = (0, methods_1.getWorth)(products);
-        res.status(http_status_codes_1.StatusCodes.OK).json({ products, worth });
-        return;
-    }
-    else {
-        const products = yield productModel_1.default.find({
-            category,
-            name: product,
-        }).lean();
-        const worth = (0, methods_1.getWorth)(products);
-        res.status(http_status_codes_1.StatusCodes.OK).json({ products, worth });
-        return;
-    }
+    // Fetch total count (optional, for frontend pagination)
+    const totalProducts = yield productModel_1.default.countDocuments(query);
+    const numOfPages = Math.ceil(totalProducts / pageLimit);
+    // Fetch paginated products with sorting
+    const products = yield productModel_1.default.find(query)
+        .sort({ name: 1 })
+        .skip(skip)
+        .limit(pageLimit)
+        .lean();
+    // Calculate worth from the filtered products (all products)
+    const allProducts = yield productModel_1.default.find(query).lean();
+    const worth = (0, methods_1.getWorth)(allProducts);
+    res
+        .status(http_status_codes_1.StatusCodes.OK)
+        .json({ products, worth, count: totalProducts, numOfPages });
 });
 exports.getProducts = getProducts;
 // GET SINGLE PRODUCT

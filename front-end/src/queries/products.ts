@@ -6,19 +6,18 @@ import {
   singleProduct,
 } from "../api/products"
 
-// get all products query
-export const useProductQuery = (product: string, category: string) => {
+// get all products
+export const useProductQuery = (
+  product: string,
+  category: string,
+  limit: number,
+  page: number
+) => {
   return useQuery({
-    queryKey: ["products", product, category],
-    queryFn: () => fetchProducts(product, category),
+    queryKey: ["products", product, category, limit, page],
+    queryFn: () => fetchProducts(product, category, limit, page),
   })
 }
-// export const useProductQuery = () => {
-//   return useQuery({
-//     queryKey: ["products"],
-//     queryFn: fetchProducts,
-//   })
-// }
 
 // get single product
 export const useGetSingleProduct = (id: string) => {
