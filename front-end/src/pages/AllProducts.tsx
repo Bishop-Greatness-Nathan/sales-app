@@ -90,7 +90,10 @@ function AllProducts() {
               autoFocus
               placeholder='search product'
               value={selectedProduct}
-              onClick={() => setShowProductModal(true)}
+              onClick={() => {
+                setShowProductModal(true)
+                setPage(1)
+              }}
               readOnly
             />
 

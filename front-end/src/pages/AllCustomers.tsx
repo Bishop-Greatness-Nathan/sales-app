@@ -111,6 +111,7 @@ function AllCustomers() {
             setShowCustomerSearchModal(true)
             setDebtors(false)
             setCustomerId("all")
+            setPage(1)
           }}
         />
         {/* HEADER */}
