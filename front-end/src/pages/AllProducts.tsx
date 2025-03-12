@@ -6,6 +6,7 @@ import SearchProductModal from "../components/modals/SearchProductModal"
 import Loading from "../components/Loading"
 import { useProductQuery } from "../queries/products"
 import { useCategoryQuery } from "../queries/categories"
+import Pagination from "../components/Pagination"
 
 function AllProducts() {
   const { currentUser } = useDashboardContext()
@@ -144,20 +145,7 @@ function AllProducts() {
 
       {/* PAGINATION */}
       {data && data?.numOfPages > 1 && (
-        <div className='flex justify-between mt-1 font-semibold text-xs lg:text-base text-[var(--primary)]'>
-          <button onClick={() => setPage(page - 1)} disabled={page === 1}>
-            prev
-          </button>
-          <span>
-            page {page} of {data && data.numOfPages}
-          </span>
-          <button
-            onClick={() => setPage(page + 1)}
-            disabled={page === data?.numOfPages}
-          >
-            next
-          </button>
-        </div>
+        <Pagination page={page} data={data} setPage={setPage} />
       )}
     </main>
   )

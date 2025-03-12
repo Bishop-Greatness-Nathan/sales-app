@@ -17,10 +17,15 @@ export const useCustomers = () => {
 }
 
 // get filtered customers
-export const useFilteredCustomers = (customerId: string, debtors: boolean) => {
+export const useFilteredCustomers = (
+  customerId: string,
+  debtors: boolean,
+  page: number,
+  limit: number
+) => {
   return useQuery({
-    queryKey: ["filtered", customerId, debtors],
-    queryFn: () => fetchFilteredCustomers(customerId, debtors),
+    queryKey: ["filtered", customerId, debtors, page, limit],
+    queryFn: () => fetchFilteredCustomers(customerId, debtors, page, limit),
   })
 }
 

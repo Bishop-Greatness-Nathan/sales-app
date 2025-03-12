@@ -8,6 +8,7 @@ import { useDashboardContext } from "./DashboardLayout"
 import CustomerSearchModal from "../components/modals/CustomerSearchModal"
 import { isAxiosError } from "axios"
 import { toast } from "react-toastify"
+import Pagination from "../components/Pagination"
 
 function AllCustomers() {
   const { showCreateCustomerModal, setShowCreateCustomerModal, currentUser } =
@@ -15,8 +16,15 @@ function AllCustomers() {
   const [customerId, setCustomerId] = useState("all")
   const [showCustomerSearchModal, setShowCustomerSearchModal] = useState(false)
   const [debtors, setDebtors] = useState(false)
+  const [page, setPage] = useState(1)
+  const [limit] = useState(5)
 
-  const { data, isLoading, isError } = useFilteredCustomers(customerId, debtors)
+  const { data, isLoading, isError } = useFilteredCustomers(
+    customerId,
+    debtors,
+    page,
+    limit
+  )
 
   const {
     mutate,
@@ -82,10 +90,10 @@ function AllCustomers() {
         </div>
         <div className='flex justify-between mt-5'>
           <h1 className='text-xs md:text-sm lg:text-base'>
-            You have {(data && data?.length) || 0}{" "}
+            You have {(data && data?.count) || 0}{" "}
             {debtors
-              ? `Debtor${data?.length !== 1 ? "s" : ""}`
-              : `Customer${data?.length !== 1 ? "s" : ""}`}
+              ? `Debtor${data?.count !== 1 ? "s" : ""}`
+              : `Customer${data?.count !== 1 ? "s" : ""}`}
           </h1>
           <button
             className='py-1 px-2 bg-[var(--primary)] text-white rounded hover:bg-[var(--hoverColor)] text-xs md:text-base'
@@ -106,7 +114,7 @@ function AllCustomers() {
           }}
         />
         {/* HEADER */}
-        {data && data?.length < 1 ? (
+        {data && data?.count < 1 ? (
           <h1 className='text-center font-bold'>No customers found</h1>
         ) : (
           <>
@@ -134,7 +142,7 @@ function AllCustomers() {
             ) : (
               <div>
                 {data &&
-                  data?.map((customer: CustomerType) => {
+                  data?.customers.map((customer: CustomerType) => {
                     return <SingleCustomer key={customer._id} {...customer} />
                   })}
               </div>
@@ -148,6 +156,11 @@ function AllCustomers() {
           showModal={setShowCustomerSearchModal}
           setCustomerId={setCustomerId}
         />
+      )}
+
+      {/* PAGINATION */}
+      {data && data?.numOfPages > 1 && (
+        <Pagination page={page} data={data} setPage={setPage} />
       )}
     </main>
   )

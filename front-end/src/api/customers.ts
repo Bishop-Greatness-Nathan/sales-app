@@ -11,14 +11,16 @@ export const fetchCustomers = async () => {
 // FETCH FILTERED CUSTOMERS
 export const fetchFilteredCustomers = async (
   customerId: string,
-  debtors: boolean
+  debtors: boolean,
+  page: number,
+  limit: number
 ) => {
   const {
-    data: { customers },
+    data: { customers, count, numOfPages },
   } = await customFetch.get(
-    `/customer/filter?customerId=${customerId}&debtors=${debtors}`
+    `/customer/filter?customerId=${customerId}&debtors=${debtors}&page=${page}&limit=${limit}`
   )
-  return customers
+  return { customers, count, numOfPages }
 }
 
 // CREATE CUSTOMER
