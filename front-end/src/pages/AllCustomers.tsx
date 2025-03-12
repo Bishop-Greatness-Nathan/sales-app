@@ -17,7 +17,7 @@ function AllCustomers() {
   const [showCustomerSearchModal, setShowCustomerSearchModal] = useState(false)
   const [debtors, setDebtors] = useState(false)
   const [page, setPage] = useState(1)
-  const [limit] = useState(5)
+  const [limit] = useState(50)
 
   const { data, isLoading, isError } = useFilteredCustomers(
     customerId,
