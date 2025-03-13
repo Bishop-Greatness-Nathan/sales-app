@@ -6,15 +6,21 @@ export const fetchOrders = async ({
   from,
   to,
   userId,
+  page,
+  limit,
 }: {
   from: string
   to: string
   userId: string
+  page: number
+  limit: number
 }) => {
   const {
-    data: { orders, analysis },
-  } = await customFetch.get(`/order?from=${from}&to=${to}&userId=${userId}`)
-  return { orders, analysis }
+    data: { orders, analysis, count, numOfPages },
+  } = await customFetch.get(
+    `/order?from=${from}&to=${to}&userId=${userId}&page=${page}&limit=${limit}`
+  )
+  return { orders, analysis, count, numOfPages }
 }
 
 // CREATE ORDER

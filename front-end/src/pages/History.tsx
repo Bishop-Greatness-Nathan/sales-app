@@ -25,7 +25,13 @@ function History() {
     // isLoading,
     isError,
     error,
-  } = useOrders({ from: queryDate.from, to: queryDate.to, userId: "all" })
+  } = useOrders({
+    from: queryDate.from,
+    to: queryDate.to,
+    userId: "all",
+    page: 1,
+    limit: Infinity,
+  })
 
   // Submit form
   const searchHistory = async (e: FormEvent<HTMLFormElement>) => {

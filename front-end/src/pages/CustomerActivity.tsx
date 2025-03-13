@@ -40,10 +40,13 @@ function CustomerActivity() {
     from: "2000-01-01",
     to: dayjs(new Date(Date.now())).format("YYYY-MM-DD"),
   })
+
   const { data, isLoading, isError, error } = useOrders({
     from: queryDate.from,
     to: queryDate.to,
     userId: "all",
+    page: 1,
+    limit: Infinity,
   })
 
   const loadPage = async () => {
@@ -84,6 +87,7 @@ function CustomerActivity() {
           ))}
         </>
       )}
+
       {showReturnItemModal && <ReturnItemModal />}
     </main>
   )
