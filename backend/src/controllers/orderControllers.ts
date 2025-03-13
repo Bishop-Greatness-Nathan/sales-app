@@ -126,36 +126,38 @@ export const getAllOrders = async (
   req: AuthenticatedRequest,
   res: Response
 ) => {
-  const { from, to, userId } = req.query
+  const { from, to, userId, page, limit } = req.query
 
-  let queryObject: {
-    enteredAt: { $gte: string; $lte: string }
-    userId?: string
-  } = {
-    enteredAt: { $gte: "", $lte: "" },
-  }
+  const pageNumber = Number(page) || 1
+  const pageLimit = Number(limit) || 20
+  const skip = (pageNumber - 1) * pageLimit
+
+  let query: any = {}
 
   if (from && to && userId === "all") {
-    queryObject = { enteredAt: { $gte: from as string, $lte: to as string } }
+    query = { enteredAt: { $gte: from as string, $lte: to as string } }
   } else {
-    queryObject = {
+    query = {
       enteredAt: { $gte: from as string, $lte: to as string },
       userId: userId as string,
     }
   }
 
-  const orders: OrderType[] = await Order.find(queryObject)
-    .sort({
-      createdAt: -1,
-    })
+  const count = await Order.countDocuments(query)
+  const numOfPages = Math.ceil(count / pageLimit)
+  const orders: OrderType[] = await Order.find(query)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(pageLimit)
     .lean<OrderType[]>()
 
-  const expenses: ExpenseType[] = await Expense.find(queryObject)
-    .sort({ createdAt: -1 })
-    .lean<ExpenseType[]>()
+  const allOrders: OrderType[] = await Order.find(query).lean<OrderType[]>()
+  const expenses: ExpenseType[] = await Expense.find(query).lean<
+    ExpenseType[]
+  >()
 
-  const analysis = calculateProfit(orders, expenses)
-  res.status(StatusCodes.OK).json({ count: orders.length, orders, analysis })
+  const analysis = calculateProfit(allOrders, expenses)
+  res.status(StatusCodes.OK).json({ count, orders, analysis, numOfPages })
 }
 
 // GET SINGLE ORDER

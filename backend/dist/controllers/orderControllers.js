@@ -113,29 +113,31 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.createOrder = createOrder;
 // GET ALL ORDERS
 const getAllOrders = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { from, to, userId } = req.query;
-    let queryObject = {
-        enteredAt: { $gte: "", $lte: "" },
-    };
+    const { from, to, userId, page, limit } = req.query;
+    const pageNumber = Number(page) || 1;
+    const pageLimit = Number(limit) || 20;
+    const skip = (pageNumber - 1) * pageLimit;
+    let query = {};
     if (from && to && userId === "all") {
-        queryObject = { enteredAt: { $gte: from, $lte: to } };
+        query = { enteredAt: { $gte: from, $lte: to } };
     }
     else {
-        queryObject = {
+        query = {
             enteredAt: { $gte: from, $lte: to },
             userId: userId,
         };
     }
-    const orders = yield orderModel_1.default.find(queryObject)
-        .sort({
-        createdAt: -1,
-    })
-        .lean();
-    const expenses = yield expensesModel_1.default.find(queryObject)
+    const count = yield orderModel_1.default.countDocuments(query);
+    const numOfPages = Math.ceil(count / pageLimit);
+    const orders = yield orderModel_1.default.find(query)
         .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(pageLimit)
         .lean();
-    const analysis = (0, methods_1.calculateProfit)(orders, expenses);
-    res.status(http_status_codes_1.StatusCodes.OK).json({ count: orders.length, orders, analysis });
+    const allOrders = yield orderModel_1.default.find(query).lean();
+    const expenses = yield expensesModel_1.default.find(query).lean();
+    const analysis = (0, methods_1.calculateProfit)(allOrders, expenses);
+    res.status(http_status_codes_1.StatusCodes.OK).json({ count, orders, analysis, numOfPages });
 });
 exports.getAllOrders = getAllOrders;
 // GET SINGLE ORDER
